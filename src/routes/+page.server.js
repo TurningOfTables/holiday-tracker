@@ -1,12 +1,13 @@
 import { getHolidays, addHoliday, deleteHoliday } from '../lib/server/db/index.js';
+import { fail } from '@sveltejs/kit'
 import dayjs from 'dayjs';
+const allowanceDays = 25
 
 export function load({ params }) {
-    let allowanceDays = 25
     let totalDays = 0;
     const holidays = getHolidays();
     for (const holiday of holidays) {
-        totalDays += dayjs(holiday.to).diff(dayjs(holiday.from), 'day', false)
+        totalDays += dayjs(holiday.to).diff(dayjs(holiday.from), 'day', false) + 1
     }
     return {
         allowanceDays,
@@ -18,7 +19,14 @@ export function load({ params }) {
 export const actions = {
     add: async ({ request }) => {
         const data = await request.formData();
-        addHoliday(data.get('start-date'), data.get('end-date'))
+
+        try {
+            addHoliday(data.get('start-date'), data.get('end-date'), allowanceDays)
+        } catch (error) {
+            return fail(422, {
+                error: error.message
+            })
+        }
     },
 
     delete: async ({ request }) => {
