@@ -1,5 +1,5 @@
 import { expect, test, describe } from 'vitest'
-import { businessDaysInclusive, totalHolidayDays } from './index'
+import { businessDaysInclusive, dateRangesIntersect, totalHolidayDays } from './index'
 
 describe('businessDaysInclusive', () => {
     test('all days are business days', () => {
@@ -56,4 +56,94 @@ describe('totalHolidayDays', () => {
         const res = totalHolidayDays(testData)
         expect(res).toBe(17)
     })
+})
+
+describe('dateRangesIntersect', () => {
+    test('range1 partially intersects range2', () => {
+        const range1 = {
+            from: "2023-12-01",
+            to: "2023-12-10"
+        }
+
+        const range2 = {
+            from: "2023-12-02",
+            to: "2023-12-05"
+        }
+        const res = dateRangesIntersect(range1, range2)
+        expect(res).toBe(true)
+    })
+
+    test('range2 partially intersects range1', () => {
+        const range1 = {
+            from: "2023-12-02",
+            to: "2023-12-05"
+        }
+        const range2 = {
+            from: "2023-12-01",
+            to: "2023-12-10"
+        }
+
+        const res = dateRangesIntersect(range1, range2)
+        expect(res).toBe(true)
+    })
+
+    test('ranges wholly intersect', () => {
+        const range1 = {
+            from: "2023-12-01",
+            to: "2023-12-10"
+        }
+        const range2 = {
+            from: "2023-12-01",
+            to: "2023-12-10"
+        }
+
+        const res = dateRangesIntersect(range1, range2)
+        expect(res).toBe(true)
+    })
+
+    test('ranges do not intersect', () => {
+        const range1 = {
+            from: "2023-12-01",
+            to: "2023-12-10"
+        }
+
+        const range2 = {
+            from: "2023-11-01",
+            to: "2023-11-10"
+        }
+
+        const res = dateRangesIntersect(range1, range2)
+        expect(res).toBe(false)
+    })
+
+    test('first day of range1 intersects last day of range2', () => {
+        const range1 = {
+            from: "2023-12-01",
+            to: "2023-12-10"
+        }
+
+        const range2 = {
+            from: "2023-11-25",
+            to: "2023-12-01"
+        }
+
+        const res = dateRangesIntersect(range1, range2)
+        expect(res).toBe(true)
+    })
+
+    test('last day of range1 intersects first day of range2', () => {
+        const range1 = {
+            from: "2023-12-01",
+            to: "2023-12-10"
+        }
+
+        const range2 = {
+            from: "2023-12-10",
+            to: "2023-12-15"
+        }
+
+        const res = dateRangesIntersect(range1, range2)
+        expect(res).toBe(true)
+    })
+
 })

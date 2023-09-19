@@ -18,3 +18,25 @@ export function totalHolidayDays(holidays) {
     }
     return totalDays
 }
+
+export function dateRangesIntersect(range1, range2) {
+    const resultRange1 = []
+    const resultRange2 = []
+
+    const daysBetween1 = dayjs(range1.to).diff(dayjs(range1.from), 'day', false)
+    const daysBetween2 = dayjs(range2.to).diff(dayjs(range2.from), 'day', false)
+
+    for (let i = 0; i <= daysBetween1; i++) {
+        resultRange1.push(dayjs(range1.from).add(i, 'day').format('YYYY-MM-DD'))
+    }
+
+    for (let i = 0; i <= daysBetween2; i++) {
+        resultRange2.push(dayjs(range2.from).add(i, 'day').format('YYYY-MM-DD'))
+    }
+
+    const found = resultRange1.find((r) => {
+        return resultRange2.includes(r)
+    })
+
+    return found != undefined
+}

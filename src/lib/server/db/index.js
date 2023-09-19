@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import dayjs from 'dayjs';
+import { totalHolidayDays, dateRangesIntersect } from '../../dateutils';
 const db_path = "./data/holidays.db"
 const numberRegex = /^[0-9]+$/
 
@@ -17,10 +18,9 @@ export function addHoliday(from, to, allowanceDays) {
     const toObj = dayjs(to)
     const currentYear = dayjs().year()
     const holidayDuration = toObj.diff(from, 'day', false)
-
-    if (from === to) {
-        throw new Error('Holiday start and end date are the same')
-    }
+    const holidays = getHolidays();
+    const totalDays = totalHolidayDays(holidays)
+    const excludedDays = getExcludedDays()
 
     if (fromObj.isAfter(toObj)) {
         throw new Error('Holiday end date is before start date')
@@ -30,14 +30,20 @@ export function addHoliday(from, to, allowanceDays) {
         throw new Error('Holiday can only be booked for the current year')
     }
 
-    const holidays = getHolidays();
-    let totalDays = 0
-    for (const holiday of holidays) {
-        totalDays += dayjs(holiday.to).diff(dayjs(holiday.from), 'day', false) + 1
-    }
-
     if (totalDays + holidayDuration > allowanceDays) {
         throw new Error('Holiday cannot exceed remaining allowance')
+    }
+
+    for (const excluded of excludedDays) {
+        if (dateRangesIntersect({from: from, to: to}, excluded)) {
+            throw new Error('Holiday cannot overlap excluded dates')
+        }
+    }
+
+    for (const holiday of holidays) {
+        if (dateRangesIntersect({from: from, to: to}, holiday)) {
+            throw new Error('Holiday cannot overlap a previous booking')
+        }
     }
 
 
@@ -53,10 +59,10 @@ export function deleteHoliday(id) {
 }
 
 export function getAllowance() {
-    const sql = `SELECT allowanceDays FROM config`
+    const sql = `SELECT allowance_days FROM config`
     const stmnt = db.prepare(sql)
     const res = stmnt.get()
-    return res.allowanceDays
+    return res.allowance_days
 }
 
 export function changeAllowance(newAllowance) {
@@ -72,7 +78,14 @@ export function changeAllowance(newAllowance) {
     const deleteStmnt = db.prepare(deleteSql)
     deleteStmnt.run()
 
-    const insertSql = `INSERT INTO config (allowanceDays) VALUES($newAllowance)`
+    const insertSql = `INSERT INTO config (allowance_days) VALUES($newAllowance)`
     const insertStmnt = db.prepare(insertSql)
     insertStmnt.run({ newAllowance })
+}
+
+export function getExcludedDays() {
+    const sql = `SELECT * FROM excluded_days`
+    const stmnt = db.prepare(sql)
+    const rows = stmnt.all()
+    return rows
 }

@@ -1,4 +1,4 @@
-import { getHolidays, addHoliday, deleteHoliday, getAllowance, changeAllowance } from '$lib/server/db/index.js';
+import { getHolidays, addHoliday, deleteHoliday, getAllowance, changeAllowance, getExcludedDays } from '$lib/server/db/index.js';
 import { totalHolidayDays } from '$lib/dateutils/index.js';
 import { fail } from '@sveltejs/kit'
 
@@ -6,10 +6,12 @@ export function load({ params }) {
     const holidays = getHolidays();
     const totalDays = totalHolidayDays(holidays)
     const allowanceDays = getAllowance()
+    const excludedDays = getExcludedDays()
     return {
         allowanceDays,
         totalDays,
-        holidays
+        holidays,
+        excludedDays
     }
 }
 

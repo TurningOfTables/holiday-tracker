@@ -72,7 +72,6 @@
 				class="shadow-md shadow-indigo-500 my-4 p-2"
 				id="start-date"
 				name="start-date"
-				min={today}
 				type="date"
 				required
 			/><br />
@@ -81,7 +80,6 @@
 				class="shadow-md shadow-indigo-500 my-4 p-2"
 				id="end-date"
 				name="end-date"
-				min={today}
 				type="date"
 				required
 			/><br />
@@ -129,6 +127,10 @@
 				</svg>
 			</button>
 		</form>
+		<p class="font-bold">Excluded dates</p>
+		{#each data.excludedDays as { id, from, to }}
+			<div class="shadow shadow-indigo-500 mx-auto p-2 w-fit my-4">{from} to {to}</div>
+		{/each}
 	</div>
 	{#if form?.error}
 		<p
@@ -136,16 +138,6 @@
 			class="error shadow-md shadow-red-500 p-2 my-2 bg-red-400 w-fit mx-auto sticky bottom-0 inline-block"
 		>
 			<span class="inline-block align-middle">{form.error}</span>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="currentColor"
-				class="inline-block align-middle h-9 visible"
-			>
-				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-			</svg>
 		</p>
 	{/if}
 </div>
