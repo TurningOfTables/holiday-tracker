@@ -1,7 +1,7 @@
-import dayjs from 'dayjs';
-import dayjsBusinessDays from 'dayjs-business-days'
+import { dayjs } from 'svelte-time';
+import dayjsBusinessDays from 'dayjs-business-days';
 
-dayjs.extend(dayjsBusinessDays)
+dayjs.extend(dayjsBusinessDays);
 
 export function businessDaysInclusive(from, to) {
     let days = dayjs(to).businessDiff(dayjs(from))

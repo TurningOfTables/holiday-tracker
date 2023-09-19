@@ -1,6 +1,8 @@
+import { dayjs } from 'svelte-time';
 import { getHolidays, addHoliday, deleteHoliday, getAllowance, changeAllowance, getExcludedDays } from '$lib/server/db/index.js';
-import { totalHolidayDays } from '$lib/dateutils/index.js';
+import { totalHolidayDays, dateRangesIntersect } from '$lib/dateutils';
 import { fail } from '@sveltejs/kit'
+const numberRegex = /^[0-9]+$/
 
 export function load({ params }) {
     const holidays = getHolidays();
@@ -18,10 +20,43 @@ export function load({ params }) {
 export const actions = {
     add: async ({ request }) => {
         const data = await request.formData();
+        const from = data.get('start-date')
+        const to = data.get('end-date')
+        const fromObj = dayjs(from)
+        const toObj = dayjs(to)
+        const currentYear = dayjs().year()
+        const holidayDuration = toObj.diff(from, 'day', false)
+        const holidays = getHolidays();
+        const totalDays = totalHolidayDays(holidays)
+        const excludedDays = getExcludedDays()
+
         const allowanceDays = getAllowance()
 
         try {
-            addHoliday(data.get('start-date'), data.get('end-date'), allowanceDays)
+            if (fromObj.isAfter(toObj)) {
+                throw new Error('Holiday end date is before start date')
+            }
+
+            if (fromObj.get('year') != currentYear || toObj.get('year') != currentYear) {
+                throw new Error('Holiday can only be booked for the current year')
+            }
+
+            if (totalDays + holidayDuration > allowanceDays) {
+                throw new Error('Holiday cannot exceed remaining allowance')
+            }
+
+            for (const excluded of excludedDays) {
+                if (dateRangesIntersect({ from: from, to: to }, excluded)) {
+                    throw new Error('Holiday cannot overlap excluded dates')
+                }
+            }
+
+            for (const holiday of holidays) {
+                if (dateRangesIntersect({ from: from, to: to }, holiday)) {
+                    throw new Error('Holiday cannot overlap a previous booking')
+                }
+            }
+            addHoliday(from, to)
         } catch (error) {
             return fail(422, {
                 error: error.message
@@ -32,13 +67,23 @@ export const actions = {
     delete: async ({ request }) => {
         const data = await request.formData();
         deleteHoliday(data.get('id'))
+        await new Promise((fulfil) => setTimeout(fulfil, 1000))
     },
 
     changeAllowance: async ({ request }) => {
         const data = await request.formData();
+        const newAllowance = data.get('change-allowance')
 
-        try{
-            changeAllowance(data.get('change-allowance'))
+        try {
+            if (newAllowance.match(numberRegex) === null) {
+                throw new Error('Allowance must contain only numbers')
+            }
+
+            if (newAllowance <= 0) {
+                throw new Error('Allowance must be more than zero')
+            }
+            changeAllowance(newAllowance)
+            await new Promise((fulfil) => setTimeout(fulfil, 1000))
         } catch (error) {
             return fail(422, {
                 error: error.message

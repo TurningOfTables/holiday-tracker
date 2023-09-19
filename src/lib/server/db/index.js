@@ -1,8 +1,7 @@
 import Database from 'better-sqlite3';
-import dayjs from 'dayjs';
-import { totalHolidayDays, dateRangesIntersect } from '../../dateutils';
+
 const db_path = "./data/holidays.db"
-const numberRegex = /^[0-9]+$/
+
 
 const db = new Database(db_path, { verbose: console.log });
 
@@ -13,40 +12,7 @@ export function getHolidays() {
     return rows;
 }
 
-export function addHoliday(from, to, allowanceDays) {
-    const fromObj = dayjs(from)
-    const toObj = dayjs(to)
-    const currentYear = dayjs().year()
-    const holidayDuration = toObj.diff(from, 'day', false)
-    const holidays = getHolidays();
-    const totalDays = totalHolidayDays(holidays)
-    const excludedDays = getExcludedDays()
-
-    if (fromObj.isAfter(toObj)) {
-        throw new Error('Holiday end date is before start date')
-    }
-
-    if (fromObj.get('year') != currentYear || toObj.get('year') != currentYear) {
-        throw new Error('Holiday can only be booked for the current year')
-    }
-
-    if (totalDays + holidayDuration > allowanceDays) {
-        throw new Error('Holiday cannot exceed remaining allowance')
-    }
-
-    for (const excluded of excludedDays) {
-        if (dateRangesIntersect({from: from, to: to}, excluded)) {
-            throw new Error('Holiday cannot overlap excluded dates')
-        }
-    }
-
-    for (const holiday of holidays) {
-        if (dateRangesIntersect({from: from, to: to}, holiday)) {
-            throw new Error('Holiday cannot overlap a previous booking')
-        }
-    }
-
-
+export function addHoliday(from, to) {
     const sql = `INSERT INTO holidays ('from', 'to') VALUES ($from, $to)`
     const stmnt = db.prepare(sql)
     stmnt.run({ from, to })
