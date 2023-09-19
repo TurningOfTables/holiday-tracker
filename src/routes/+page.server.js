@@ -1,14 +1,11 @@
-import { getHolidays, addHoliday, deleteHoliday } from '../lib/server/db/index.js';
+import { getHolidays, addHoliday, deleteHoliday, getAllowance, changeAllowance } from '$lib/server/db/index.js';
+import { totalHolidayDays } from '$lib/dateutils/index.js';
 import { fail } from '@sveltejs/kit'
-import dayjs from 'dayjs';
-const allowanceDays = 25
 
 export function load({ params }) {
-    let totalDays = 0;
     const holidays = getHolidays();
-    for (const holiday of holidays) {
-        totalDays += dayjs(holiday.to).diff(dayjs(holiday.from), 'day', false) + 1
-    }
+    const totalDays = totalHolidayDays(holidays)
+    const allowanceDays = getAllowance()
     return {
         allowanceDays,
         totalDays,
@@ -19,6 +16,7 @@ export function load({ params }) {
 export const actions = {
     add: async ({ request }) => {
         const data = await request.formData();
+        const allowanceDays = getAllowance()
 
         try {
             addHoliday(data.get('start-date'), data.get('end-date'), allowanceDays)
@@ -32,5 +30,17 @@ export const actions = {
     delete: async ({ request }) => {
         const data = await request.formData();
         deleteHoliday(data.get('id'))
+    },
+
+    changeAllowance: async ({ request }) => {
+        const data = await request.formData();
+
+        try{
+            changeAllowance(data.get('change-allowance'))
+        } catch (error) {
+            return fail(422, {
+                error: error.message
+            })
+        }
     }
 }

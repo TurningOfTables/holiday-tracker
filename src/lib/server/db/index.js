@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import dayjs from 'dayjs';
 const db_path = "./data/holidays.db"
+const numberRegex = /^[0-9]+$/
 
 const db = new Database(db_path, { verbose: console.log });
 
@@ -16,7 +17,6 @@ export function addHoliday(from, to, allowanceDays) {
     const toObj = dayjs(to)
     const currentYear = dayjs().year()
     const holidayDuration = toObj.diff(from, 'day', false)
-    console.log(holidayDuration + " duration")
 
     if (from === to) {
         throw new Error('Holiday start and end date are the same')
@@ -50,4 +50,29 @@ export function deleteHoliday(id) {
     const sql = `DELETE FROM holidays WHERE id = $id`
     const stmnt = db.prepare(sql)
     stmnt.run({ id })
+}
+
+export function getAllowance() {
+    const sql = `SELECT allowanceDays FROM config`
+    const stmnt = db.prepare(sql)
+    const res = stmnt.get()
+    return res.allowanceDays
+}
+
+export function changeAllowance(newAllowance) {
+    if (newAllowance.match(numberRegex) === null) {
+        throw new Error('Allowance must contain only numbers')
+    }
+
+    if (newAllowance <= 0) {
+        throw new Error('Allowance must be more than zero')
+    }
+
+    const deleteSql = `DELETE FROM config`
+    const deleteStmnt = db.prepare(deleteSql)
+    deleteStmnt.run()
+
+    const insertSql = `INSERT INTO config (allowanceDays) VALUES($newAllowance)`
+    const insertStmnt = db.prepare(insertSql)
+    insertStmnt.run({ newAllowance })
 }
