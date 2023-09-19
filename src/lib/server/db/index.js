@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 
 const db_path = './data/holidays.db';
 
-const db = new Database(db_path, { verbose: console.log });
+const db = new Database(db_path);
 
 export function getHolidays() {
 	const sql = `SELECT * FROM holidays`;
@@ -27,7 +27,7 @@ export function getAllowance() {
 	const sql = `SELECT allowance_days FROM config`;
 	const stmnt = db.prepare(sql);
 	const res = stmnt.get();
-	return res.allowance_days;
+	return res?.allowance_days ?? 0;
 }
 
 export function changeAllowance(newAllowance) {

@@ -37,7 +37,6 @@ export const actions = {
 		const holidays = getHolidays();
 		const totalDays = totalHolidayDays(holidays);
 		const excludedDays = getExcludedDays();
-
 		const allowanceDays = getAllowance();
 
 		try {
@@ -75,7 +74,6 @@ export const actions = {
 	delete: async ({ request }) => {
 		const data = await request.formData();
 		deleteHoliday(data.get('id'));
-		await new Promise((fulfil) => setTimeout(fulfil, 1000));
 	},
 
 	changeAllowance: async ({ request }) => {
@@ -91,7 +89,6 @@ export const actions = {
 				throw new Error('Allowance must be more than zero');
 			}
 			changeAllowance(newAllowance);
-			await new Promise((fulfil) => setTimeout(fulfil, 1000));
 		} catch (error) {
 			return fail(422, {
 				error: error.message

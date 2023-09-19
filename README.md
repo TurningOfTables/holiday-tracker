@@ -1,38 +1,37 @@
-# create-svelte
+# holiday tracker
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Description
 
-## Creating a project
+A holiday tracker app created using Svelte, SvelteKit and TailwindCSS. Designed only for personal use as it doesn't have user account functionality; stores all data in an SQLite db.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Allows you to:
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+* View and set your annual holiday allowance total
+* Add and delete holidays which are calculated against business days
+* See your remaining holiday allowance
+* Set (manually in the db at the moment) excluded holiday periods which cannot be booked against
+* Prevent various error scenarios such as tracking more holiday than your allowance, booking holidays which start before they end, booking holidays which overlap etc.
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+![Screenshot](readme_screenshot.png)
 
-## Developing
+## Improvements/features/stretch goals
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+* Increase test coverage now that functionality has stabilised
+* Allow user configuration of excluded date ranges
+* Link to download to your calendar? 🤔
+* Multi-user functionality
+* Split configuration to a different page
 
-```bash
-npm run dev
+## Install and run
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+* Initialise the db with `npm run dbinit`
+* Build with `npm run build`
+* Or dev with `npm run dev`
 
-## Building
+## Attributions
 
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+* [Svelte](https://svelte.dev/)
+* [SvelteKit](https://kit.svelte.dev/)
+* [TailwindCSS](https://tailwindcss.com/)
+* [Heroicons](https://heroicons.com/)
+* [date-fns](https://date-fns.org/)
