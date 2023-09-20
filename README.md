@@ -4,6 +4,8 @@
 
 A holiday tracker app created using Svelte, SvelteKit and TailwindCSS. Designed only for personal use as it doesn't have user account functionality; stores all data in an SQLite db.
 
+*Do not use for any sensitive data - this is a work in progress and a learning project*
+
 Allows you to:
 
 * View and set your annual holiday allowance total

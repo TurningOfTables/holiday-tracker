@@ -10,6 +10,7 @@ db.serialize(() => {
 	db.run(
 		`CREATE TABLE excluded_days (id INTEGER PRIMARY KEY AUTOINCREMENT, 'from' DATE, 'to' DATE)`
 	);
+	db.run(`CREATE TABLE "users" ( "id" INTEGER, "username" TEXT, "password" INTEGER, PRIMARY KEY("id" AUTOINCREMENT) )`)
 });
 
 db.close();

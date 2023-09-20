@@ -35,7 +35,9 @@
 		<SaveButton loading={updatingAllowance} text="Save" />
 	</form>
 	<p class="font-bold">Excluded dates</p>
-	{#each data.excludedDays as { from, to }}
-		<div class="shadow shadow-indigo-500 mx-auto p-2 w-fit my-4">{from} to {to}</div>
-	{/each}
+	{#if data.excludedDays.length > 0}
+		{#each data.excludedDays as { from, to }}
+			<div class="shadow shadow-indigo-500 mx-auto p-2 w-fit my-4">{from} to {to}</div>
+		{/each}
+	{:else}<span>Not set</span>{/if}
 </div>

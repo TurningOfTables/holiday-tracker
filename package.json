@@ -32,8 +32,10 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"bcrypt": "^5.1.1",
 		"better-sqlite3": "^8.6.0",
 		"date-fns": "^2.30.0",
-		"sqlite3": "^5.1.6"
+		"sqlite3": "^5.1.6",
+		"uuid": "^9.0.1"
 	}
 }

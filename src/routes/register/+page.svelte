@@ -6,22 +6,22 @@
 	import Header from '$lib/components/Header.svelte';
 	import FormError from '$lib/components/FormError.svelte';
 
-	let loggingin = false;
+	let registering = false;
 </script>
 
 <Header />
 <div class="container text-center mx-auto">
 	<div class="login-form my-16">
-		<h1 class="text-2xl my-4">Log in</h1>
+		<h1 class="text-2xl my-4">Register</h1>
 		<form
 			method="POST"
-			action="?/login"
+			action="?/register"
 			use:enhance={() => {
-				loggingin = true;
+				registering = true;
 
 				return async ({ update }) => {
 					await update();
-					loggingin = false;
+					registering = false;
 				};
 			}}
 		>
@@ -42,10 +42,24 @@
 					id="password"
 					name="password"
 					type="password"
+					pattern={".{8,255}"}
+					placeholder="8-255 characters"
 					required
 				/>
 			</div>
-			<SaveButton loading={loggingin} text="Submit" />
+            <div class="my-4">
+				<label class="font-bold" for="confirm-password">Confirm Password</label><br />
+				<input
+					class="shadow-md shadow-indigo-500 my-4 p-2"
+					id="confirm-password"
+					name="confirm-password"
+					type="password"
+					pattern={".{8,255}"}
+					placeholder="8-255 characters"
+					required
+				/>
+			</div>
+			<SaveButton loading={registering} text="Register" />
 		</form>
 	</div>
 	<FormError {form} />
