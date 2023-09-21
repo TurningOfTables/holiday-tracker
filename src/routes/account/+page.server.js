@@ -7,16 +7,19 @@ import {
 	getExcludedDays
 } from '$lib/server/db/index.js';
 import { totalHolidayDays, dateRangesIntersect } from '$lib/dateutils';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { getYear, isAfter } from 'date-fns';
-import { businessDaysInclusive } from '../../lib/dateutils/index.js';
+import { businessDaysInclusive } from '$lib/dateutils/index.js';
+import { getUserBySession } from '$lib/server/db/index.js';
 const numberRegex = /^[0-9]+$/;
 
-export function load({locals}) {
-	const holidays = getHolidays();
+export function load({locals, request, cookies}) {
+	const sessionId = cookies.get('session_id')
+	const user = getUserBySession(sessionId)
+	const holidays = getHolidays(user.userid);
 	const totalDays = totalHolidayDays(holidays);
-	const allowanceDays = getAllowance();
-	const excludedDays = getExcludedDays();
+	const allowanceDays = getAllowance(user.userid);
+	const excludedDays = getExcludedDays(user.userid);
 
 	return {
 		user: locals.user,
@@ -28,7 +31,9 @@ export function load({locals}) {
 }
 
 export const actions = {
-	add: async ({ request }) => {
+	add: async ({ request, cookies }) => {
+		const sessionId = cookies.get('session_id')
+		const user = getUserBySession(sessionId)
 		const data = await request.formData();
 		const from = data.get('start-date');
 		const to = data.get('end-date');
@@ -36,10 +41,10 @@ export const actions = {
 		const toObj = new Date(to);
 		const currentYear = getYear(new Date());
 		const holidayDuration = businessDaysInclusive(from, to);
-		const holidays = getHolidays();
+		const holidays = getHolidays(user.userid);
 		const totalDays = totalHolidayDays(holidays);
-		const excludedDays = getExcludedDays();
-		const allowanceDays = getAllowance();
+		const excludedDays = getExcludedDays(user.userid);
+		const allowanceDays = getAllowance(user.userid);
 
 		try {
 			if (isAfter(fromObj, toObj)) {
@@ -65,7 +70,7 @@ export const actions = {
 					throw new Error('Holiday cannot overlap a previous booking');
 				}
 			}
-			addHoliday(from, to);
+			addHoliday(user.userid, from, to);
 		} catch (error) {
 			return fail(422, {
 				error: error.message
@@ -73,12 +78,16 @@ export const actions = {
 		}
 	},
 
-	delete: async ({ request }) => {
+	delete: async ({ request, cookies }) => {
+		const sessionId = cookies.get('session_id')
+		const user = getUserBySession(sessionId)
 		const data = await request.formData();
-		deleteHoliday(data.get('id'));
+		deleteHoliday(user.userid, data.get('id'));
 	},
 
-	changeAllowance: async ({ request }) => {
+	changeAllowance: async ({ request, cookies}) => {
+		const sessionId = cookies.get('session_id')
+		const user = getUserBySession(sessionId)
 		const data = await request.formData();
 		const newAllowance = data.get('change-allowance');
 
@@ -90,16 +99,11 @@ export const actions = {
 			if (newAllowance <= 0) {
 				throw new Error('Allowance must be more than zero');
 			}
-			changeAllowance(newAllowance);
+			changeAllowance(user.userid, newAllowance);
 		} catch (error) {
 			return fail(422, {
 				error: error.message
 			});
 		}
-	},
-
-	logout: async ({ request, cookies }) => {
-		cookies.delete('session_id')
-		throw redirect(303, '/')
 	}
 };

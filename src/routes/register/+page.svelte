@@ -1,5 +1,6 @@
 <script>
 	export let form;
+	export let data;
 
 	import { enhance } from '$app/forms';
 	import SaveButton from '$lib/components/SaveButton.svelte';
@@ -9,7 +10,7 @@
 	let registering = false;
 </script>
 
-<Header />
+<Header {data} />
 <div class="container text-center mx-auto">
 	<div class="login-form my-16">
 		<h1 class="text-2xl my-4">Register</h1>

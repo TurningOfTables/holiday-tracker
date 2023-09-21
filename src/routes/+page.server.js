@@ -1,9 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { v4 as uuidv4 } from 'uuid';
-import { authenticateUser, setUserSession, clearUserSession } from '../lib/server/db/index.js';
+import { authenticateUser, setUserSession } from '../lib/server/db/index.js';
 
-export function load({locals}) {
+export async function load({ locals, url }) {
+    const registered = await url.searchParams.get('registered')
     return {
+        registered: registered,
         user: locals.user
     }
 }
@@ -23,12 +25,5 @@ export const actions = {
             })
         }
 
-    },
-
-    logout: async ({ request, cookies }) => {
-        const uuid = cookies.get('session_id')
-        cookies.delete('session_id')
-        clearUserSession(uuid)
-        throw redirect(303, '/')
     }
 }

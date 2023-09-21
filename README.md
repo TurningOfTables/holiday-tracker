@@ -2,12 +2,13 @@
 
 ## Description
 
-A holiday tracker app created using Svelte, SvelteKit and TailwindCSS. Designed only for personal use as it doesn't have user account functionality; stores all data in an SQLite db.
+A holiday tracker app created using Svelte, SvelteKit and TailwindCSS. Not production tested and should not be used for any real purpose in its current state.
 
 *Do not use for any sensitive data - this is a work in progress and a learning project*
 
-Allows you to:
 
+* Register a new account (passwords are hashed with bcrypt when stored in the db)
+* Log in/log out
 * View and set your annual holiday allowance total
 * Add and delete holidays which are calculated against business days
 * See your remaining holiday allowance
@@ -21,7 +22,6 @@ Allows you to:
 * Increase test coverage now that functionality has stabilised
 * Allow user configuration of excluded date ranges
 * Link to download to your calendar? 🤔
-* Multi-user functionality
 * Split configuration to a different page
 
 ## Install and run
