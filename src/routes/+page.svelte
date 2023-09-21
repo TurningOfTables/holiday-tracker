@@ -13,8 +13,11 @@
 
 <Header {data} />
 <div class="container text-center mx-auto">
-	<div class="login-form my-16">
-		{#if data.registered}<FormOkay content="Registration successful 🎉" />{/if}
+	<div data-testid="login-form" class="login-form my-16">
+		{#if data.registered}<FormOkay
+				dataTestId="login-form__register_success"
+				content="Registration successful 🎉"
+			/>{/if}
 		<h1 class="text-2xl my-4">Log in</h1>
 		<form
 			method="POST"
@@ -32,6 +35,7 @@
 				<label class="font-bold" for="username">Username</label><br />
 				<input
 					class="shadow-md shadow-indigo-500 my-4 p-2"
+					data-testid="login-form__username"
 					id="username"
 					name="username"
 					type="text"
@@ -42,13 +46,14 @@
 				<label class="font-bold" for="password">Password</label><br />
 				<input
 					class="shadow-md shadow-indigo-500 my-4 p-2"
+					data-testid="login-form__password"
 					id="password"
 					name="password"
 					type="password"
 					required
 				/>
 			</div>
-			<SaveButton loading={loggingin} text="Submit" />
+			<SaveButton dataTestId="login-form__submit" loading={loggingin} text="Submit" />
 		</form>
 	</div>
 	<FormError {form} />

@@ -42,7 +42,7 @@
 	}
 </script>
 
-<div class="holiday-overview">
+<div class="holiday-overview border-2 mt-16 max-w-2xl mx-auto border-indigo-200">
 	<h1 class="text-2xl my-4">{greeting} {data?.user?.username}! {emoji}</h1>
 	<p class="my-4">
 		Today is {friendlyDate}. You have <span class="font-bold">{remainingAllowance}</span> of

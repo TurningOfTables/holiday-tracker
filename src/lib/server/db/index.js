@@ -10,7 +10,7 @@ const db = new Database(db_path);
 export function getHolidays(userid) {
 	const sql = `SELECT * FROM holidays WHERE userid = $userid`;
 	const stmnt = db.prepare(sql);
-	const rows = stmnt.all({userid});
+	const rows = stmnt.all({ userid });
 	return rows;
 }
 
@@ -48,6 +48,18 @@ export function getExcludedDays(userid) {
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all({ userid });
 	return rows;
+}
+
+export function addExcludedDays(userid, from, to) {
+	const sql = `INSERT INTO excluded_days ('userid', 'from', 'to') VALUES ($userid, $from, $to)`;
+	const stmnt = db.prepare(sql);
+	stmnt.run({ userid, from, to });
+}
+
+export function deleteExcludedDays(userid, id) {
+	const sql = `DELETE FROM excluded_days WHERE id = $id AND userid = $userid`
+	const stmnt = db.prepare(sql)
+	stmnt.run({ userid, id })
 }
 
 export function createUser(username, password) {

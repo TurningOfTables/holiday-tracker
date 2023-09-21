@@ -4,16 +4,18 @@ import {
 	deleteHoliday,
 	getAllowance,
 	changeAllowance,
-	getExcludedDays
+	getExcludedDays,
+	addExcludedDays
 } from '$lib/server/db/index.js';
 import { totalHolidayDays, dateRangesIntersect } from '$lib/dateutils';
 import { fail } from '@sveltejs/kit';
 import { getYear, isAfter } from 'date-fns';
 import { businessDaysInclusive } from '$lib/dateutils/index.js';
 import { getUserBySession } from '$lib/server/db/index.js';
+import { deleteExcludedDays } from '../../lib/server/db/index.js';
 const numberRegex = /^[0-9]+$/;
 
-export function load({locals, request, cookies}) {
+export function load({ locals, cookies }) {
 	const sessionId = cookies.get('session_id')
 	const user = getUserBySession(sessionId)
 	const holidays = getHolidays(user.userid);
@@ -85,7 +87,7 @@ export const actions = {
 		deleteHoliday(user.userid, data.get('id'));
 	},
 
-	changeAllowance: async ({ request, cookies}) => {
+	changeAllowance: async ({ request, cookies }) => {
 		const sessionId = cookies.get('session_id')
 		const user = getUserBySession(sessionId)
 		const data = await request.formData();
@@ -105,5 +107,48 @@ export const actions = {
 				error: error.message
 			});
 		}
+	},
+
+	addExcludedDays: async ({ request, cookies }) => {
+		const sessionId = cookies.get('session_id')
+		const user = getUserBySession(sessionId)
+		const data = await request.formData();
+		const from = data.get('start-date');
+		const to = data.get('end-date');
+		const fromObj = new Date(from);
+		const toObj = new Date(to);
+		const holidays = getHolidays(user.userid);
+		const excludedDays = getExcludedDays(user.userid);
+
+		try {
+			if (isAfter(fromObj, toObj)) {
+				throw new Error('Excluded end date is before start date');
+			}
+
+			for (const holiday of holidays) {
+				if (dateRangesIntersect({ from: from, to: to }, holiday)) {
+					throw new Error('Excluded dates cannot overlap an existing holiday');
+				}
+			}
+
+			for (const excluded of excludedDays) {
+				if (dateRangesIntersect({ from: from, to: to }, excluded)) {
+					throw new Error('Excluded dates cannot overlap a previous exclusion');
+				}
+			}
+			addExcludedDays(user.userid, from, to);
+		} catch (error) {
+			return fail(422, {
+				error: error.message
+			});
+		}
+	},
+
+	deleteExcludedDays: async ({ request, cookies }) => {
+		const sessionId = cookies.get('session_id')
+		const user = getUserBySession(sessionId)
+		const data = await request.formData();
+		await new Promise((fulfil) => setTimeout(fulfil, 2000))
+		deleteExcludedDays(user.userid, data.get('id'));
 	}
 };

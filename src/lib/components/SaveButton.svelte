@@ -1,10 +1,12 @@
 <script>
+	export let dataTestId
 	export let loading;
 	export let text;
 </script>
 
 <button
 	class="bg-indigo-500 py-2 px-4 my-2 text-white font-semibold w-fit shadow-md shadow-indigo-500 inline-block h-fit"
+	data-testid={dataTestId}
 	disabled={loading}
 	><span class="px-2 inline-block align-middle">{text}</span>{#if loading}<svg
 			xmlns="http://www.w3.org/2000/svg"

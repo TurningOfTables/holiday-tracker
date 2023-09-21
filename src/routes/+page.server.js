@@ -16,7 +16,10 @@ export const actions = {
         const auth = authenticateUser(data.get('username'), data.get('password'))
         if (auth) {
             const uuid = uuidv4()
-            cookies.set('session_id', uuid)
+            cookies.set('session_id', uuid, {
+                httpOnly: true,
+                sameSite: true
+            })
             setUserSession(auth, uuid)
             throw redirect(303, '/account')
         } else {

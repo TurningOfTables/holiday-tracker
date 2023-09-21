@@ -30,6 +30,7 @@
 				<label class="font-bold" for="username">Username</label><br />
 				<input
 					class="shadow-md shadow-indigo-500 my-4 p-2"
+					data-testid="register-form__username"
 					id="username"
 					name="username"
 					type="text"
@@ -40,6 +41,7 @@
 				<label class="font-bold" for="password">Password</label><br />
 				<input
 					class="shadow-md shadow-indigo-500 my-4 p-2"
+					data-testid="register-form__password"
 					id="password"
 					name="password"
 					type="password"
@@ -52,6 +54,7 @@
 				<label class="font-bold" for="confirm-password">Confirm Password</label><br />
 				<input
 					class="shadow-md shadow-indigo-500 my-4 p-2"
+					data-testid="register-form__confirm_password"
 					id="confirm-password"
 					name="confirm-password"
 					type="password"
@@ -60,7 +63,7 @@
 					required
 				/>
 			</div>
-			<SaveButton loading={registering} text="Register" />
+			<SaveButton dataTestId="register-form__submit" loading={registering} text="Register" />
 		</form>
 	</div>
 	<FormError {form} />
