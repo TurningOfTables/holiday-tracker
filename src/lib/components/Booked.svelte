@@ -5,7 +5,7 @@
 	import { enhance } from '$app/forms';
 	import { slide } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { businessDaysInclusive } from '$lib/dateutils/index.js';
+	import { businessDaysInclusive, dateRangeState } from '$lib/dateutils/index.js';
 	import SaveButton from './SaveButton.svelte';
 
 	let deletingId = false;
@@ -15,7 +15,7 @@
 <div class="booked-holiday mt-16 border-2 max-w-2xl mx-auto border-indigo-200">
 	<h1 class="text-2xl my-4">Bookings - {total} day(s)</h1>
 	<ul>
-		{#each data.holidays as { id, from, to }}
+		{#each data.holidays as { id, start_date, end_date }}
 			<div
 				class="shadow-md shadow-indigo-500 mx-auto my-4 w-fit p-4"
 				transition:slide={{ easing: quintOut, axis: 'y' }}
@@ -35,11 +35,25 @@
 						}}
 					>
 						<input type="hidden" name="id" value={id} />
-						<span class="inline-block align-middle"
-							>{#if deletingId === id}Deleting...{:else}{businessDaysInclusive(from, to)} day(s) from
-								{from}
-								to {to}{/if}</span
-						>
+						{#if dateRangeState(start_date, end_date) === 'past'}
+							<span class="inline-block align-middle text-opacity-50 line-through"
+								>{#if deletingId === id}Deleting...{:else}{businessDaysInclusive(
+										start_date,
+										end_date
+									)} day(s) from
+									{start_date}
+									to {end_date}{/if}</span
+							>
+						{:else}
+							<span class="inline-block align-middle"
+								>{#if deletingId === id}Deleting...{:else}{businessDaysInclusive(
+										start_date,
+										end_date
+									)} day(s) from
+									{start_date}
+									to {end_date}{/if}</span
+							>
+						{/if}
 						<button class="inline-block align-middle" aria-label="Delete"
 							><svg
 								xmlns="http://www.w3.org/2000/svg"

@@ -1,5 +1,5 @@
 import { redirect } from "@sveltejs/kit";
-import { getUserBySession } from "./lib/server/db";
+import { clearUserSession, getUserBySession } from "./lib/server/db";
 const protectedRoutes = ['/account']
 export const handle = async ({ event, request, resolve }) => {
     const sessionId = event.cookies.get('session_id')
@@ -26,10 +26,13 @@ export const handle = async ({ event, request, resolve }) => {
     // Remove session cookie if logout query param is true
     const query = event.url.searchParams.get('logout');
     if (Boolean(query) == true) {
+        const user = getUserBySession(sessionId)
+        clearUserSession(user.uuid)
         event.locals.user = {
             isLoggedIn: false,
         }
-        event.cookies.delete('session_id', { path: '/' });
+        event.cookies.delete('session_id', { path: '/', secure: false });
+        
     }
     return resolve(event)
 }

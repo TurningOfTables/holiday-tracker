@@ -8,14 +8,14 @@ const db_path = './data/holidays.db';
 const db = new Database(db_path);
 
 export function getHolidays(userid) {
-	const sql = `SELECT * FROM holidays WHERE userid = $userid`;
+	const sql = `SELECT * FROM holidays WHERE userid = $userid ORDER BY start_date ASC`;
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all({ userid });
 	return rows;
 }
 
 export function addHoliday(userid, from, to) {
-	const sql = `INSERT INTO holidays ('userid', 'from', 'to') VALUES ($userid, $from, $to)`;
+	const sql = `INSERT INTO holidays ('userid', 'start_date', 'end_date') VALUES ($userid, $from, $to)`;
 	const stmnt = db.prepare(sql);
 	stmnt.run({ userid, from, to });
 }
@@ -27,7 +27,7 @@ export function deleteHoliday(userid, id) {
 }
 
 export function getAllowance(userid) {
-	const sql = `SELECT allowance_days FROM config WHERE userid = $userid`;
+	const sql = `SELECT allowance_days FROM config WHERE userid = $userid `;
 	const stmnt = db.prepare(sql);
 	const res = stmnt.get({ userid });
 	return res?.allowance_days ?? 0;
@@ -44,14 +44,14 @@ export function changeAllowance(userid, newAllowance) {
 }
 
 export function getExcludedDays(userid) {
-	const sql = `SELECT * FROM excluded_days WHERE userid = $userid`;
+	const sql = `SELECT * FROM excluded_days WHERE userid = $userid ORDER BY start_date ASC`;
 	const stmnt = db.prepare(sql);
 	const rows = stmnt.all({ userid });
 	return rows;
 }
 
 export function addExcludedDays(userid, from, to) {
-	const sql = `INSERT INTO excluded_days ('userid', 'from', 'to') VALUES ($userid, $from, $to)`;
+	const sql = `INSERT INTO excluded_days ('userid', 'start_date', 'end_date') VALUES ($userid, $from, $to)`;
 	const stmnt = db.prepare(sql);
 	stmnt.run({ userid, from, to });
 }

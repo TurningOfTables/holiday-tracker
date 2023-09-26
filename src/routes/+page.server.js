@@ -18,7 +18,8 @@ export const actions = {
             const uuid = uuidv4()
             cookies.set('session_id', uuid, {
                 httpOnly: true,
-                sameSite: true
+                sameSite: true,
+                secure: false,
             })
             setUserSession(auth, uuid)
             throw redirect(303, '/account')

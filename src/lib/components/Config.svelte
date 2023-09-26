@@ -84,7 +84,7 @@
 			<p class="font-bold mt-8">Excluded dates</p>
 			{#if data.excludedDays.length > 0}
 				<ul>
-					{#each data.excludedDays as { id, from, to }}
+					{#each data.excludedDays as { id, start_date, end_date }}
 						<div
 							class="shadow-md shadow-indigo-500 mx-auto my-4 w-fit p-4"
 							transition:slide={{ easing: quintOut, axis: 'y' }}
@@ -105,10 +105,10 @@
 								>
 									<input type="hidden" name="id" value={id} />
 									<span class="inline-block align-middle"
-										>{#if deletingId === id}Deleting...{:else}{businessDaysInclusive(from, to)} day(s)
+										>{#if deletingId === id}Deleting...{:else}{businessDaysInclusive(start_date, end_date)} day(s)
 											from
-											{from}
-											to {to}{/if}</span
+											{start_date}
+											to {end_date}{/if}</span
 									>
 									<button class="inline-block align-middle" aria-label="Delete"
 										><svg
