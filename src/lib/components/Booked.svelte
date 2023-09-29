@@ -12,12 +12,13 @@
 	let adding = false;
 </script>
 
-<div class="booked-holiday mt-16 border-2 max-w-2xl mx-auto border-indigo-200">
+<div data-testid="account-page__bookings_container" class="booked-holiday mt-16 border-2 max-w-2xl mx-auto border-indigo-200">
 	<h1 class="text-2xl my-4">Bookings - {total} day(s)</h1>
 	<ul>
 		{#each data.holidays as { id, start_date, end_date }}
 			<div
 				class="shadow-md shadow-indigo-500 mx-auto my-4 w-fit p-4"
+				data-testid="account-page__bookings_booking"
 				transition:slide={{ easing: quintOut, axis: 'y' }}
 			>
 				<li>
@@ -54,7 +55,7 @@
 									to {end_date}{/if}</span
 							>
 						{/if}
-						<button class="inline-block align-middle" aria-label="Delete"
+						<button data-testid="account-page__booking_delete" class="inline-block align-middle" aria-label="Delete"
 							><svg
 								xmlns="http://www.w3.org/2000/svg"
 								fill="none"
@@ -77,6 +78,7 @@
 		<form
 			method="POST"
 			action="?/add"
+			data-testid="account-page__bookings_add_form"
 			use:enhance={() => {
 				adding = true;
 
@@ -91,6 +93,7 @@
 				<input
 					class="shadow-md shadow-indigo-500 my-4 p-2"
 					id="start-date"
+					data-testid="account-page__bookings_add_start_date"
 					name="start-date"
 					type="date"
 					required
@@ -101,13 +104,14 @@
 				<input
 					class="shadow-md shadow-indigo-500 my-4 p-2"
 					id="end-date"
+					data-testid="account-page__bookings_add_end_date"
 					name="end-date"
 					type="date"
 					required
 				/>
 			</div>
 
-			<SaveButton loading={adding} text="Add" />
+			<SaveButton dataTestId="account-page__bookings_add_button" loading={adding} text="Add" />
 		</form>
 	</ul>
 </div>

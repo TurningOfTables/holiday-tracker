@@ -18,7 +18,7 @@
 	}
 </script>
 
-<div class="config my-16 border-2 max-w-2xl mx-auto border-indigo-200">
+<div data-testid="account_page__configuration_container" class="config my-16 border-2 max-w-2xl mx-auto border-indigo-200">
 	<button
 		class="text-2xl my-4 inline-block "
 		on:click={toggleAccordion}

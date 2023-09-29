@@ -1,0 +1,6 @@
+BEGIN TRANSACTION;
+DELETE FROM "config";
+DELETE FROM "holidays";
+DELETE FROM "excluded_days";
+DELETE FROM "users";
+COMMIT;

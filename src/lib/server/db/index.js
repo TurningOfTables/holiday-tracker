@@ -2,8 +2,15 @@ import Database from 'better-sqlite3';
 import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid';
 const saltRounds = 10;
+let db_path
 
-const db_path = './data/holidays.db';
+if (process.env.DB_MODE === "prod") {
+	db_path = './data/holidays.db';
+	console.log(`Using prod mode db: ${db_path}`)
+} else {
+	db_path = './data/test.db'
+	console.log(`Using test mode db: ${db_path}`)
+}
 
 const db = new Database(db_path);
 
@@ -30,7 +37,7 @@ export function getAllowance(userid) {
 	const sql = `SELECT allowance_days FROM config WHERE userid = $userid `;
 	const stmnt = db.prepare(sql);
 	const res = stmnt.get({ userid });
-	return res?.allowance_days ?? 0;
+	return res?.allowance_days ?? 25;
 }
 
 export function changeAllowance(userid, newAllowance) {
