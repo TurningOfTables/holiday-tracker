@@ -31,3 +31,11 @@ export async function addBooking(page, duration) {
     await page.getByTestId(selectors.account.bookings.addEndDate).fill(endDate)
     await page.getByTestId(selectors.account.bookings.addSubmit).click()
 }
+
+export async function addExcludedPeriod(page, duration) {
+    const startDate = format(new Date(), dateFormatToType)
+    const endDate = format(add(new Date(), { days: duration }), dateFormatToType)
+    await page.getByTestId(selectors.account.configuration.excludedPeriods.addStartDate).fill(startDate)
+    await page.getByTestId(selectors.account.configuration.excludedPeriods.addEndDate).fill(endDate)
+    await page.getByTestId(selectors.account.configuration.excludedPeriods.addSubmit).click()
+}

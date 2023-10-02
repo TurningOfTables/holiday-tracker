@@ -21,6 +21,8 @@ export const selectors = {
             container: "account-page__overview_container",
             header: "account-page__overview_header",
             content: "account-page__overview_content",
+            allowance_total: "account-page__overview_allowance_total",
+            allowance_remaining: "account-page__overview_allowance_remaining"
         },
         bookings: {
             container: "account-page__bookings_container",
@@ -31,8 +33,22 @@ export const selectors = {
             addEndDate: "account-page__bookings_add_end_date",
             addSubmit: "account-page__bookings_add_button"
         },
+
         configuration: {
-            container: "account_page__configuration_container"
+            container: "account_page__configuration_container",
+            allowance: {
+                daysInput: "account-page__allowance_input",
+                saveButton: "account-page__allowance_save_button"
+            },
+            excludedPeriods: {
+                container: "account-page__excluded_period_container",
+                excludedPeriod: "account-page__excluded_period",
+                excludedPeriodDelete: "account-page__excluded_period_delete",
+                addForm: "account-page__excluded_period_add_form",
+                addStartDate: "account-page__excluded_period_add_start_date",
+                addEndDate: "account-page__excluded_period_add_end_date",
+                addSubmit: "account-page__excluded_period_add_button"
+            },
         }
     },
     formError: {

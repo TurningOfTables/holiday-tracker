@@ -4,7 +4,7 @@ process.env.DB_MODE = "test"
 import { expect, test } from '@playwright/test';
 import { selectors } from './selectors'
 import { paths, queryParams } from './paths'
-import { createTestUser, login, addBooking } from './actions'
+import { createTestUser, login, addBooking, addExcludedPeriod } from './actions'
 import { createDb, clearDb } from '../src/lib/server/db/dbsetup';
 
 const dbPath = "./data/test.db"
@@ -112,6 +112,37 @@ test.describe('Account', () => {
 		await expect(page.getByTestId(selectors.account.bookings.booking)).toHaveCount(1)
 		await page.getByTestId(selectors.account.bookings.bookingDelete).click()
 		await expect(page.getByTestId(selectors.account.bookings.booking)).toHaveCount(0)
+	})
+
+	test('Change allowance', async ({ page }) => {
+		const testAllowance = "999"
+		const testUser = await createTestUser(page)
+		await login(page, testUser.username, testUser.password)
+		await page.getByTestId(selectors.account.configuration.container).click()
+		await page.getByTestId(selectors.account.configuration.allowance.daysInput).fill(testAllowance)
+		await page.getByTestId(selectors.account.configuration.allowance.saveButton).click()
+		await expect(page.getByTestId(selectors.account.overview.allowance_remaining)).toHaveText(testAllowance)
+		await expect(page.getByTestId(selectors.account.overview.allowance_total)).toHaveText(testAllowance)
+	})
+
+	test('Add excluded period', async ({ page }) => {
+		const testUser = await createTestUser(page)
+		await login(page, testUser.username, testUser.password)
+		await page.getByTestId(selectors.account.configuration.container).click()
+		await expect(page.getByTestId(selectors.account.configuration.excludedPeriods.excludedPeriod)).toHaveCount(0)
+		await addExcludedPeriod(page, 10)
+		await expect(page.getByTestId(selectors.account.configuration.excludedPeriods.excludedPeriod)).toHaveCount(1)
+	})
+
+	test('Delete excluded period', async ({ page }) => {
+		const testUser = await createTestUser(page)
+		await login(page, testUser.username, testUser.password)
+		await page.getByTestId(selectors.account.configuration.container).click()
+		await expect(page.getByTestId(selectors.account.configuration.excludedPeriods.excludedPeriod)).toHaveCount(0)
+		await addExcludedPeriod(page, 10)
+		await expect(page.getByTestId(selectors.account.configuration.excludedPeriods.excludedPeriod)).toHaveCount(1)
+		await page.getByTestId(selectors.account.configuration.excludedPeriods.excludedPeriodDelete).click()
+		await expect(page.getByTestId(selectors.account.configuration.excludedPeriods.excludedPeriod)).toHaveCount(0)
 	})
 })
 
